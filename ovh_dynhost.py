@@ -3,6 +3,7 @@
 A simple script to update the OVH DynHost entry with the current external IP of this machine.
 """
 
+import argparse
 import configparser
 import ipgetter
 import requests
@@ -10,8 +11,18 @@ import socket
 import sys
 
 def main():
+	ap = argparse.ArgumentParser(prog='ovh_dynhost', description='Updates the OVH DynHost entry to the current IP address.')
+	ap.add_argument('-c', '--config', help='The configuration file location.')
+	args = ap.parse_args()
+
+	if args.config:
+		config_file = args.config
+	else:
+		config_file = 'config.ini'
+
 	cp = configparser.ConfigParser()
-	if len(cp.read('config.ini')) == 0:
+
+	if len(cp.read(config_file)) == 0:
 		sys.stderr.write("Config file is missing or empty.\n")
 		sys.exit(-1)
 
