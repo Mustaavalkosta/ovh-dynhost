@@ -1,0 +1,11 @@
+[domain1]
+Username = user1
+Password = pass1
+
+[domain2]
+Username = user2
+Password = pass2
+
+[domain3]
+Username = user3
+Password = pass3
