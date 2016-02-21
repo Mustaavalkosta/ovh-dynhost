@@ -5,6 +5,7 @@ A simple script to update the OVH DynHost entry with the current external IP of 
 
 import argparse
 import configparser
+import datetime
 import ipgetter
 import requests
 import socket
@@ -23,7 +24,7 @@ def main():
 	cp = configparser.ConfigParser()
 
 	if len(cp.read(config_file)) == 0:
-		sys.stderr.write("Config file is missing or empty.\n")
+		loge("Config file is missing or empty.")
 		sys.exit(-1)
 
 	for section in cp.sections():
@@ -43,7 +44,7 @@ def main():
 		if not check_dns(domain, ip):
 			update_dns(domain, ip, username, password)
 		else:
-			sys.stdout.write(domain + ": IP did not change.\n")
+			logi(domain + ": IP did not change.")
 
 def check_dns(domain, ip):
 	addr_info = socket.getaddrinfo(domain, 80)
@@ -57,19 +58,28 @@ def update_dns(domain, ip, username, password):
 	queryArguments = {'system':'dyndns', 'hostname':domain, 'myip':ip}
 	response = requests.get("https://www.ovh.com/nic/update", params=queryArguments, auth=(username, password))
 	if response.text.startswith('good ' + ip):
-			sys.stdout.write("Update to " + ip + " successful.\n")
+			logi("Update to " + ip + " successful.")
 			sys.exit(0)
 	elif response.status_code == requests.codes.get(401):
 		# 401 Authentification failed
-		sys.stderr.write("Authentification failed. Username or password is wrong.\n")
+		loge("Authentification failed. Username or password is wrong.")
 		sys.exit(-2)
 	elif response.status_code == requests.codes.get(403):
 		# 403 Forbidden
-		sys.stderr.write("Authentification is missing.\n")
+		loge("Authentification is missing.")
 		sys.exit(-3)
 	
-	sys.stderr.write("Update failed.\n")
+	loge("Update failed.")
 	sys.exit(-1)
+
+def get_date():
+	return datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
+
+def logi(str):
+	sys.stdout.write("[" + get_date() + "] " + str + "\n")
+
+def loge(str):
+	sys.stderr.write("[" + get_date() + "] " + str + "\n")
 
 if __name__ == '__main__':
 	main()
