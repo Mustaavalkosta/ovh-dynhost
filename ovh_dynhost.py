@@ -69,7 +69,7 @@ def update_dns(domain, ip, username, password):
 		loge("Authentification is missing.")
 		sys.exit(-3)
 	
-	loge("Update failed.")
+	loge("Update failed. (" + response.text + ")")
 	sys.exit(-1)
 
 def get_date():
