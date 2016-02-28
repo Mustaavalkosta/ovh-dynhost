@@ -60,6 +60,9 @@ def update_dns(domain, ip, username, password):
 	if response.text.startswith('good ' + ip):
 			logi("Update to " + ip + " successful.")
 			sys.exit(0)
+	elif response.text.startswith('nochg ' + ip):
+			logi("Update failed. IP did not change.")
+			sys.exit(0)
 	elif response.status_code == requests.codes.get(401):
 		# 401 Authentification failed
 		loge("Authentification failed. Username or password is wrong.")
